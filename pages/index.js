@@ -6,17 +6,22 @@ const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopup = document.querySelector("#add-todo-popup");
 const addTodoForm = addTodoPopup.querySelector(".popup__form");
 const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close");
-const todoTemplate = document.querySelector("#todo-template");
 const todosList = document.querySelector(".todos__list");
 const formValidator = new FormValidator(validationConfig, addTodoForm);
 
+formValidator.enableValidation();
+
 const openModal = (modal) => {
   modal.classList.add("popup_visible");
-  formValidator.enableValidation();
 };
 
 const closeModal = (modal) => {
   modal.classList.remove("popup_visible");
+};
+
+const generateTodo = (data) => {
+  const todo = new Todo(data, "#todo-template");
+  todosList.append(todo.getView());
 };
 
 addTodoButton.addEventListener("click", () => {
@@ -37,13 +42,15 @@ addTodoForm.addEventListener("submit", (evt) => {
   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
 
   const values = { name, date };
-  const todo = new Todo(values, todoTemplate);
-  todosList.append(todo.getView());
+  generateTodo(values);
+  // const todo = new Todo(values, todoTemplate);
+  // todosList.append(todo.getView());
   formValidator.resetValidation();
   closeModal(addTodoPopup);
 });
 
 initialTodos.forEach((item) => {
-  const todo = new Todo(item, todoTemplate);
-  todosList.append(todo.getView());
+  generateTodo(item);
+  // const todo = new Todo(item, "#todo-template");
+  // todosList.append(todo.getView());
 });

@@ -6,7 +6,7 @@ class Todo {
     this._name = data.name;
     this._completed = data.completed;
     this._date = data.date;
-    this._selector = selector;
+    this._templateElement = document.querySelector(selector);
   }
 
   _toggleCheckBox() {
@@ -26,9 +26,8 @@ class Todo {
 
   getView() {
     // todo template element
-    const todoElement = document
-      .querySelector("#todo-template")
-      .content.querySelector(".todo")
+    const todoElement = this._templateElement.content
+      .querySelector(".todo")
       .cloneNode(true);
 
     this._todoElement = todoElement;

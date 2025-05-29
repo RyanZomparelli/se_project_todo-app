@@ -61,7 +61,6 @@ class Todo {
     this._todoDeleteBtnEl = todoDeleteBtnEl;
 
     this._setEventListeners();
-
     return todoElement;
   }
 }

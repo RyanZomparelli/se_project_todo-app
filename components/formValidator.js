@@ -8,6 +8,10 @@ class FormValidator {
     this._errorClass = settings.errorClass;
     this._inputErrorClass = settings.inputErrorClass;
     this._inactiveBtnClass = settings.inactiveButtonClass;
+    this._buttonElement = this._form.querySelector(this._submitBtnSelector);
+    this._inputList = Array.from(
+      this._form.querySelectorAll(this._inputSelector)
+    );
   }
 
   _showInputError(inputElement, errorMessage) {
@@ -32,34 +36,29 @@ class FormValidator {
     }
   }
 
-  _hasInvalidInput(inputList) {
-    return inputList.some((inputElement) => {
+  _hasInvalidInput() {
+    return this._inputList.some((inputElement) => {
       return !inputElement.validity.valid;
     });
   }
 
-  _toggleButtonState(inputList, buttonElement) {
-    if (this._hasInvalidInput(inputList)) {
-      buttonElement.classList.add(this._inactiveBtnClass);
-      buttonElement.disabled = true;
+  _toggleButtonState() {
+    if (this._hasInvalidInput()) {
+      this._buttonElement.classList.add(this._inactiveBtnClass);
+      this._buttonElement.disabled = true;
     } else {
-      buttonElement.classList.remove(this._inactiveBtnClass);
-      buttonElement.disabled = false;
+      this._buttonElement.classList.remove(this._inactiveBtnClass);
+      this._buttonElement.disabled = false;
     }
   }
 
-  _setEventListeners(formElement) {
-    const inputList = Array.from(
-      formElement.querySelectorAll(this._inputSelector)
-    );
+  _setEventListeners() {
+    this._toggleButtonState();
 
-    const buttonElement = this._form.querySelector(this._submitBtnSelector);
-    this._toggleButtonState(inputList, buttonElement);
-
-    inputList.forEach((input) => {
+    this._inputList.forEach((input) => {
       input.addEventListener("input", () => {
         this._checkInputValidity(input);
-        this._toggleButtonState(inputList, buttonElement);
+        this._toggleButtonState();
       });
     });
   }
@@ -69,14 +68,12 @@ class FormValidator {
     formElement.addEventListener("submit", (event) => {
       event.preventDefault();
     });
-    this._setEventListeners(formElement);
+    this._setEventListeners();
   }
 
   resetValidation() {
     this._form.reset();
-    const buttonElement = this._form.querySelector(this._submitBtnSelector);
-    buttonElement.classList.add(this._inactiveBtnClass);
-    buttonElement.disabled = true;
+    this._toggleButtonState();
   }
 }
 

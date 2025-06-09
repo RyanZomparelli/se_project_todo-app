@@ -1,12 +1,13 @@
 import { initialTodos, validationConfig } from "../utils/constants.js";
 import { Todo } from "../components/todo.js";
 import { FormValidator } from "../components/formValidator.js";
+import Section from "../components/Section.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopup = document.querySelector("#add-todo-popup");
 const addTodoForm = addTodoPopup.querySelector(".popup__form");
 const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close");
-const todosList = document.querySelector(".todos__list");
+const todosList = document.querySelector(".todos__list"); //Still using for now but get rid of later
 const formValidator = new FormValidator(validationConfig, addTodoForm);
 
 formValidator.enableValidation();
@@ -32,6 +33,7 @@ addTodoCloseBtn.addEventListener("click", () => {
   closeModal(addTodoPopup);
 });
 
+// Creates and renders new todo items
 addTodoForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
   const name = evt.target.name.value;
@@ -43,14 +45,24 @@ addTodoForm.addEventListener("submit", (evt) => {
 
   const values = { name, date };
   generateTodo(values);
-  // const todo = new Todo(values, todoTemplate);
-  // todosList.append(todo.getView());
   formValidator.resetValidation();
   closeModal(addTodoPopup);
 });
 
-initialTodos.forEach((item) => {
-  generateTodo(item);
-  // const todo = new Todo(item, "#todo-template");
-  // todosList.append(todo.getView());
+const todoListSection = new Section({
+  items: initialTodos,
+  renderer: (item) => {
+    const todo = new Todo(item, "#todo-template");
+    const todoElement = todo.getView();
+    todoListSection.setItem(todoElement);
+  },
+  containerSelector: ".todos__list",
 });
+
+todoListSection.renderItems();
+
+// !! Now uses the Section object !! See above
+// Creates and renders initial todos
+// initialTodos.forEach((item) => {
+//   generateTodo(item);
+// });

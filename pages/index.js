@@ -2,23 +2,31 @@ import { initialTodos, validationConfig } from "../utils/constants.js";
 import { Todo } from "../components/todo.js";
 import { FormValidator } from "../components/formValidator.js";
 import Section from "../components/Section.js";
+// Remove Later ↓ switch everything to PopupForm
+import Popup from "../components/Popup.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopup = document.querySelector("#add-todo-popup");
 const addTodoForm = addTodoPopup.querySelector(".popup__form");
-const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close");
+// const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close"); remove later
 const todosList = document.querySelector(".todos__list"); //Still using for now but get rid of later
 const formValidator = new FormValidator(validationConfig, addTodoForm);
 
 formValidator.enableValidation();
 
-const openModal = (modal) => {
-  modal.classList.add("popup_visible");
-};
+// Now opens with Popup class. See below
+// const openModal = (modal) => {
+//   modal.classList.add("popup_visible");
+// };
 
-const closeModal = (modal) => {
-  modal.classList.remove("popup_visible");
-};
+// Remove later and instantiate PopupForm
+const popup = new Popup({
+  popupSelector: "#add-todo-popup",
+});
+
+// const closeModal = (modal) => {
+//   modal.classList.remove("popup_visible");
+// };
 
 const generateTodo = (data) => {
   const todo = new Todo(data, "#todo-template");
@@ -26,12 +34,13 @@ const generateTodo = (data) => {
 };
 
 addTodoButton.addEventListener("click", () => {
-  openModal(addTodoPopup);
+  // openModal(addTodoPopup);
+  popup.open();
 });
 
-addTodoCloseBtn.addEventListener("click", () => {
-  closeModal(addTodoPopup);
-});
+// addTodoCloseBtn.addEventListener("click", () => {
+//   closeModal(addTodoPopup);
+// });
 
 // Creates and renders new todo items
 addTodoForm.addEventListener("submit", (evt) => {
@@ -46,7 +55,8 @@ addTodoForm.addEventListener("submit", (evt) => {
   const values = { name, date };
   generateTodo(values);
   formValidator.resetValidation();
-  closeModal(addTodoPopup);
+  // closeModal(addTodoPopup);
+  popup.close();
 });
 
 const todoListSection = new Section({
@@ -60,9 +70,3 @@ const todoListSection = new Section({
 });
 
 todoListSection.renderItems();
-
-// !! Now uses the Section object !! See above
-// Creates and renders initial todos
-// initialTodos.forEach((item) => {
-//   generateTodo(item);
-// });

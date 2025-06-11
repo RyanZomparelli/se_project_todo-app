@@ -1,12 +1,14 @@
 import { v4 as uuidv4 } from "https://jspm.dev/uuid";
 
 class Todo {
-  constructor(data, selector) {
+  constructor(data, selector, { handleTodoDelete, handleTodoComplete }) {
     this._id = data.id;
     this._name = data.name;
     this._completed = data.completed;
     this._date = data.date;
     this._templateElement = document.querySelector(selector);
+    this._handleTodoDelete = handleTodoDelete;
+    this._handleTodoComplete = handleTodoComplete;
   }
 
   _toggleCheckBox() {
@@ -15,12 +17,14 @@ class Todo {
 
   _setEventListeners() {
     this._todoDeleteBtnEl.addEventListener("click", () => {
+      this._handleTodoDelete(this._completed);
       this._todoElement.remove();
       this._todoElement = null;
     });
 
     this._todoCheckboxEl.addEventListener("click", () => {
       this._toggleCheckBox();
+      this._handleTodoComplete(this._completed);
     });
   }
 
@@ -57,9 +61,7 @@ class Todo {
 
     // todo delete button element
     // see _setEventListeners()
-    const todoDeleteBtnEl = todoElement.querySelector(".todo__delete-btn");
-    this._todoDeleteBtnEl = todoDeleteBtnEl;
-
+    this._todoDeleteBtnEl = todoElement.querySelector(".todo__delete-btn");
     this._setEventListeners();
     return todoElement;
   }

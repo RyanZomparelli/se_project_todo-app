@@ -7,12 +7,32 @@ import TodoCounter from "../components/TodoCounter.js";
 
 //DOM Elements
 const addTodoButton = document.querySelector(".button_action_add");
-const addTodoPopup = document.querySelector("#add-todo-popup");
-const addTodoForm = addTodoPopup.querySelector(".popup__form");
+const addTodoForm = document.forms["add-todo-form"];
 
 //Enable form validation
 const formValidator = new FormValidator(validationConfig, addTodoForm);
 formValidator.enableValidation();
+
+//Function to create new todos
+const renderTodo = (item) => {
+  const todo = new Todo(item, "#todo-template", {
+    //Use two seperate callbacks in the Todo class to handle the todo counter
+    handleTodoDelete: (wasCompleted) => {
+      todoCounter.updateTotal(false);
+      if (wasCompleted) {
+        todoCounter.updateCompleted(false);
+      }
+    },
+    handleTodoComplete: (isCompleted) => {
+      isCompleted
+        ? todoCounter.updateCompleted(true)
+        : todoCounter.updateCompleted(false);
+    },
+  });
+  //Create a DOM element from the new todo instance using todo's getView() method and
+  // render it(add it to the DOM) using an instance of the Section class.
+  todoListSection.addItem(todo.getView());
+};
 
 //Add new todos upon form submission
 const popupForm = new PopupWithForm({
@@ -25,23 +45,7 @@ const popupForm = new PopupWithForm({
         formInputValues.date.getTimezoneOffset()
     );
     //Pass formatted form inputs to create a new instance of the Todo class
-    const todo = new Todo(formInputValues, "#todo-template", {
-      //Use two seperate callbacks in the Todo class to handle the todo counter
-      handleTodoDelete: (wasCompleted) => {
-        todoCounter.updateTotal(false);
-        if (wasCompleted) {
-          todoCounter.updateCompleted(false);
-        }
-      },
-      handleTodoComplete: (isCompleted) => {
-        isCompleted
-          ? todoCounter.updateCompleted(true)
-          : todoCounter.updateCompleted(false);
-      },
-    });
-    //Create a DOM element from the new todo instance using todo's getView() method and
-    // render it(add it to the DOM) using an instance of the Section class.
-    todoListSection.addItem(todo.getView());
+    renderTodo(formInputValues);
     //Reset the form after submission.
     formValidator.resetValidation();
     //Close the form after submission using a method inherited from the Popup class.
@@ -64,21 +68,7 @@ addTodoButton.addEventListener("click", () => {
 const todoListSection = new Section({
   items: initialTodos,
   renderer: (item) => {
-    const todo = new Todo(item, "#todo-template", {
-      handleTodoDelete: (wasCompleted) => {
-        todoCounter.updateTotal(false);
-        if (wasCompleted) {
-          todoCounter.updateCompleted(false);
-        }
-      },
-      handleTodoComplete: (isCompleted) => {
-        isCompleted
-          ? todoCounter.updateCompleted(true)
-          : todoCounter.updateCompleted(false);
-      },
-    });
-
-    todoListSection.addItem(todo.getView());
+    renderTodo(item);
   },
   containerSelector: ".todos__list",
 });
